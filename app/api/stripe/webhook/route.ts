@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
-import { createClient } from '@supabase/supabase-js';
+import { getStripe } from '@/lib/stripe';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+let _supabaseAdmin: SupabaseClient | null = null;
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+function getSupabaseAdmin(): SupabaseClient {
+  if (!_supabaseAdmin) {
+    _supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+  }
+  return _supabaseAdmin;
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -22,6 +27,10 @@ export async function POST(request: NextRequest) {
   }
 
   let event: Stripe.Event;
+
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+  const stripe = getStripe();
+  const supabaseAdmin = getSupabaseAdmin();
 
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);

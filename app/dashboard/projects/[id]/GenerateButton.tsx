@@ -41,6 +41,8 @@ export default function GenerateButton({ projectId, status, limits, plan }: Gene
         throw new Error(data.error || 'Failed to start generation')
       }
 
+      setLoading(false)
+
       // Refresh the page to show generating status
       router.refresh()
 
@@ -82,21 +84,20 @@ export default function GenerateButton({ projectId, status, limits, plan }: Gene
       <button
         onClick={handleGenerate}
         disabled={!canGenerate || loading || limitReached}
-        className={`px-8 py-3 rounded-lg font-semibold transition-opacity ${
-          canGenerate && !loading && hasLimitRemaining
+        className={`px-8 py-3 rounded-lg font-semibold transition-opacity ${canGenerate && !loading && hasLimitRemaining
             ? 'bg-accent text-white hover:opacity-90'
             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-        }`}
+          }`}
       >
         {isGenerating
           ? 'Generating...'
           : loading
-          ? 'Starting...'
-          : status === 'complete'
-          ? 'Generated ✓'
-          : limitReached
-          ? 'Limit Reached'
-          : 'Generate Offer'}
+            ? 'Starting...'
+            : status === 'complete'
+              ? 'Generated ✓'
+              : limitReached
+                ? 'Limit Reached'
+                : 'Generate Offer'}
       </button>
       {isGenerating && (
         <p className="text-sm text-gray-600 mt-2">
