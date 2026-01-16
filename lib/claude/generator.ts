@@ -40,7 +40,7 @@ export async function generateDocument(
       // Web search tool - using any to bypass SDK type mismatch
       messageParams.tools = [
         {
-          type: 'web_search_20241101',
+          type: 'web_search_20250305',
           name: 'web_search',
         } as any,
       ]

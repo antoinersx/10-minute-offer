@@ -1,9 +1,0 @@
-{
-    "status": "executing",
-    "message": "Running Claude Code loop 5\n",
-    "loop_count": 5,
-    "call_count": 0,
-    "rate_limit": 100,
-    "timestamp": "2026-01-15T15:17:47+00:00",
-    "circuit_state": "CLOSED"
-}
