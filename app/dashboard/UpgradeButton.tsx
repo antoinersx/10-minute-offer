@@ -23,18 +23,20 @@ export default function UpgradeButton({ variant = 'primary', className = '' }: U
         body: JSON.stringify({ planType }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to create checkout session');
+        throw new Error(data.details || data.error || 'Failed to create checkout session');
       }
 
-      const { url } = await response.json();
-
-      if (url) {
-        window.location.href = url;
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating checkout session:', error);
-      alert('Failed to start purchase process. Please try again.');
+      alert(`Failed to start purchase: ${error.message}`);
       setIsLoading(false);
     }
   };

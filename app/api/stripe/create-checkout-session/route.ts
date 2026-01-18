@@ -73,10 +73,14 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ url: session.url });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating checkout session:', error);
     return NextResponse.json(
-      { error: 'Failed to create checkout session' },
+      {
+        error: 'Failed to create checkout session',
+        details: error?.message || 'Unknown error',
+        code: error?.code || 'unknown'
+      },
       { status: 500 }
     );
   }
