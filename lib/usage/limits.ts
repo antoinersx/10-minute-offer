@@ -83,30 +83,37 @@ export async function getGenerationLimits(userId: string): Promise<GenerationLim
   }
 
   const plan = refreshedProfile.plan || 'free'
+  const reportCredits = (refreshedProfile as any).report_credits || 0
 
   if (plan === 'free') {
-    // Free plan: 1 generation lifetime
+    // Free plan: 1 generation lifetime + any purchased report credits
+    const baseAllowed = 1
+    const totalAllowed = baseAllowed + reportCredits
+    const used = refreshedProfile.total_generations || 0
     return {
-      allowed: 1,
-      used: refreshedProfile.total_generations || 0,
-      remaining: Math.max(0, 1 - (refreshedProfile.total_generations || 0)),
+      allowed: totalAllowed,
+      used: used,
+      remaining: Math.max(0, totalAllowed - used),
       isUnlimited: false,
     }
   } else if (plan === 'pro') {
-    // Pro plan: 5 generations per month
+    // Pro plan: 5 generations per month + any purchased report credits
+    const baseAllowed = 5
+    const totalAllowed = baseAllowed + reportCredits
+    const used = refreshedProfile.generations_this_month || 0
     return {
-      allowed: 5,
-      used: refreshedProfile.generations_this_month || 0,
-      remaining: Math.max(0, 5 - (refreshedProfile.generations_this_month || 0)),
+      allowed: totalAllowed,
+      used: used,
+      remaining: Math.max(0, totalAllowed - used),
       isUnlimited: false,
     }
   }
 
-  // Unknown plan, return no access
+  // Unknown plan, return only report credits if any
   return {
-    allowed: 0,
+    allowed: reportCredits,
     used: 0,
-    remaining: 0,
+    remaining: reportCredits,
     isUnlimited: false,
   }
 }

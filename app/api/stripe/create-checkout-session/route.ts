@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/server';
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
+    const body = await request.json().catch(() => ({}));
+    const planType = body.planType || 'subscription'; // 'subscription' or 'one_report'
 
     const {
       data: { user },
@@ -41,7 +43,12 @@ export async function POST(request: NextRequest) {
         .eq('id', user.id);
     }
 
-    if (!STRIPE_CONFIG.proPriceId) {
+    // Determine price ID and mode based on plan type
+    const isSubscription = planType === 'subscription';
+    const priceId = isSubscription ? STRIPE_CONFIG.proPriceId : STRIPE_CONFIG.oneReportPriceId;
+    const mode = isSubscription ? 'subscription' : 'payment';
+
+    if (!priceId) {
       return NextResponse.json(
         { error: 'Stripe price ID not configured' },
         { status: 500 }
@@ -52,15 +59,16 @@ export async function POST(request: NextRequest) {
       customer: customerId,
       line_items: [
         {
-          price: STRIPE_CONFIG.proPriceId,
+          price: priceId,
           quantity: 1,
         },
       ],
-      mode: 'subscription',
+      mode: mode,
       success_url: STRIPE_CONFIG.successUrl,
       cancel_url: STRIPE_CONFIG.cancelUrl,
       metadata: {
         supabase_user_id: user.id,
+        plan_type: planType,
       },
     });
 

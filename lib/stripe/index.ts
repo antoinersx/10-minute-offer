@@ -30,8 +30,13 @@ export function getStripePriceId(): string {
 export const STRIPE_PRICE_ID_PRO = '';
 
 export const STRIPE_CONFIG = {
+  // Monthly subscription - 5 reports/month at $29.99
   get proPriceId() {
     return process.env.STRIPE_PRICE_ID_PRO || '';
+  },
+  // One-time purchase - 1 report at $14.99
+  get oneReportPriceId() {
+    return process.env.STRIPE_PRICE_ID_ONE_REPORT || '';
   },
   currency: 'usd',
   get successUrl() {
