@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     if (!customerId) {
       const customer = await stripe.customers.create({
-        email: profile.email,
+        email: profile.email || user.email,
         metadata: {
           supabase_user_id: user.id,
         },
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     // Determine price ID and mode based on plan type
     const isSubscription = planType === 'subscription';
     const priceId = isSubscription ? STRIPE_CONFIG.proPriceId : STRIPE_CONFIG.oneReportPriceId;
-    const mode = isSubscription ? 'subscription' : 'payment';
+    const mode: 'subscription' | 'payment' = isSubscription ? 'subscription' : 'payment';
 
     if (!priceId) {
       return NextResponse.json(

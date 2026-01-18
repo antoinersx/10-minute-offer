@@ -60,11 +60,13 @@ export default async function DashboardPage() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
                 <h3 className="text-lg font-semibold mb-1">
-                  {profile?.plan === 'pro' ? 'Pro Plan' : 'Free Plan'}
+                  {profile?.plan === 'pro' ? 'Pro Plan' : 'Pay As You Go'}
                 </h3>
                 <p className="text-sm text-gray-600">
-                  {limits.remaining} of {limits.allowed} report{limits.allowed !== 1 ? 's' : ''} remaining
-                  {profile?.plan === 'pro' ? ' this month' : ''}
+                  {limits.allowed === 0
+                    ? 'No reports yet - purchase to get started'
+                    : `${limits.remaining} of ${limits.allowed} report${limits.allowed !== 1 ? 's' : ''} remaining${profile?.plan === 'pro' ? ' this month' : ''}`
+                  }
                 </p>
               </div>
               <div className="flex items-center gap-4">
@@ -73,13 +75,12 @@ export default async function DashboardPage() {
                   <div className="text-xs text-gray-500">remaining</div>
                 </div>
                 {profile?.plan === 'pro' ? (
-                  <ManageSubscriptionButton />
-                ) : (
-                  limits.remaining === 0 ? (
-                    <UpgradeButton />
-                  ) : (
+                  <>
                     <UpgradeButton variant="secondary" />
-                  )
+                    <ManageSubscriptionButton />
+                  </>
+                ) : (
+                  <UpgradeButton />
                 )}
               </div>
             </div>

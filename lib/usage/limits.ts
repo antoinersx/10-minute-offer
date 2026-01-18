@@ -86,9 +86,8 @@ export async function getGenerationLimits(userId: string): Promise<GenerationLim
   const reportCredits = (refreshedProfile as any).report_credits || 0
 
   if (plan === 'free') {
-    // Free plan: 1 generation lifetime + any purchased report credits
-    const baseAllowed = 1
-    const totalAllowed = baseAllowed + reportCredits
+    // Free plan: 0 base credits, only purchased report credits
+    const totalAllowed = reportCredits
     const used = refreshedProfile.total_generations || 0
     return {
       allowed: totalAllowed,
@@ -143,10 +142,10 @@ export async function canGenerateOffer(userId: string): Promise<{
       .eq('id', userId)
       .single()
 
-    if (profile?.plan === 'free') {
+    if (profile?.plan === 'free' || !profile?.plan) {
       return {
         allowed: false,
-        reason: 'Free plan limit reached. Upgrade to Pro for 5 offers per month.',
+        reason: 'You need to purchase reports to continue. Get 1 report for $14.99 or subscribe for 5 reports/month at $29.99.',
         limits,
       }
     } else {
