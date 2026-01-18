@@ -63,7 +63,7 @@ export default async function DashboardPage() {
                   {profile?.plan === 'pro' ? 'Pro Plan' : 'Free Plan'}
                 </h3>
                 <p className="text-sm text-gray-600">
-                  {limits.remaining} of {limits.allowed} offer{limits.allowed !== 1 ? 's' : ''} remaining
+                  {limits.remaining} of {limits.allowed} report{limits.allowed !== 1 ? 's' : ''} remaining
                   {profile?.plan === 'pro' ? ' this month' : ''}
                 </p>
               </div>
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">No projects yet</h3>
                 <p className="text-gray-600 mb-6">
-                  Create your first offer to get started. We'll generate a complete offer package in under 10 minutes.
+                  Create your first market research report to get started. We'll generate comprehensive insights in minutes.
                 </p>
                 <CreateProjectButton profileData={profile} />
               </div>

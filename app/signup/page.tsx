@@ -58,7 +58,7 @@ export default function SignupPage() {
         <div className="bg-white rounded-lg shadow-lg p-8">
           <h1 className="text-3xl font-bold mb-2 text-center">Get Started</h1>
           <p className="text-gray-600 mb-6 text-center">
-            Create your 10 Minute Offer account
+            Create your MarketReveal account
           </p>
 
           <form onSubmit={handleSignup} className="space-y-4">

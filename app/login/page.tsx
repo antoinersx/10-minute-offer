@@ -43,7 +43,7 @@ export default function LoginPage() {
         <div className="bg-white rounded-lg shadow-lg p-8">
           <h1 className="text-3xl font-bold mb-2 text-center">Welcome Back</h1>
           <p className="text-gray-600 mb-6 text-center">
-            Sign in to your 10 Minute Offer account
+            Sign in to your MarketReveal account
           </p>
 
           <form onSubmit={handleLogin} className="space-y-4">

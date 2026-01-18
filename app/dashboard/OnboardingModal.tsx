@@ -71,9 +71,9 @@ export default function OnboardingModal({ userId, onComplete }: OnboardingModalP
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-8">
           <div className="mb-6">
-            <h2 className="text-3xl font-bold mb-2">Welcome to 10 Minute Offer!</h2>
+            <h2 className="text-3xl font-bold mb-2">Welcome to MarketReveal!</h2>
             <p className="text-gray-600">
-              Let's gather some information about your business to help us create better offers for you.
+              Let's gather some information about your business to help us create better market research for you.
             </p>
           </div>
 

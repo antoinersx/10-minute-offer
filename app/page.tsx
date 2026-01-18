@@ -4,9 +4,9 @@ export default function Home() {
   return (
     <main className="min-h-screen flex items-center justify-center p-8">
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">10 Minute Offer</h1>
+        <h1 className="text-4xl font-bold mb-4">MarketReveal.ai</h1>
         <p className="text-xl text-gray-600">
-          Generate complete offer packages with AI
+          AI-Powered Market Research in Minutes
         </p>
         <div className="mt-8 flex gap-4 justify-center">
           <Link
