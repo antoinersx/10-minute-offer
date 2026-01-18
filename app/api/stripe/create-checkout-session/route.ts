@@ -55,6 +55,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Build URLs with fallback to production domain
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://marketreveal.ai';
+    const successUrl = `${baseUrl}/dashboard?upgrade=success`;
+    const cancelUrl = `${baseUrl}/dashboard?upgrade=cancelled`;
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [
@@ -64,8 +69,8 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: mode,
-      success_url: STRIPE_CONFIG.successUrl,
-      cancel_url: STRIPE_CONFIG.cancelUrl,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
       metadata: {
         supabase_user_id: user.id,
         plan_type: planType,
