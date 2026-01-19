@@ -55,10 +55,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Build URLs with fallback to production domain
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://marketreveal.ai';
-    const successUrl = `${baseUrl}/dashboard?upgrade=success`;
-    const cancelUrl = `${baseUrl}/dashboard?upgrade=cancelled`;
+    // Use hardcoded URLs to avoid any env var issues
+    const successUrl = 'https://marketreveal.ai/dashboard?upgrade=success';
+    const cancelUrl = 'https://marketreveal.ai/dashboard?upgrade=cancelled';
+
+    console.log('Creating checkout with:', { priceId, mode, successUrl, cancelUrl, customerId });
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
