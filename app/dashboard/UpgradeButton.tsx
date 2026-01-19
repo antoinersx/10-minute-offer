@@ -7,38 +7,18 @@ interface UpgradeButtonProps {
   className?: string;
 }
 
+// Stripe Payment Links
+const PAYMENT_LINKS = {
+  one_report: 'https://buy.stripe.com/4gMaEXcmQaes57p8rVbo400',
+  subscription: 'https://buy.stripe.com/dRmeVdbiM5Yc9nFgYrbo401',
+};
+
 export default function UpgradeButton({ variant = 'primary', className = '' }: UpgradeButtonProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
 
-  const handlePurchase = async (planType: 'subscription' | 'one_report') => {
-    setIsLoading(true);
+  const handlePurchase = (planType: 'subscription' | 'one_report') => {
     setShowOptions(false);
-    try {
-      const response = await fetch('/api/stripe/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ planType }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.details || data.error || 'Failed to create checkout session');
-      }
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('No checkout URL received');
-      }
-    } catch (error: any) {
-      console.error('Error creating checkout session:', error);
-      alert(`Failed to start purchase: ${error.message}`);
-      setIsLoading(false);
-    }
+    window.location.href = PAYMENT_LINKS[planType];
   };
 
   const baseStyles = 'px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
@@ -50,10 +30,9 @@ export default function UpgradeButton({ variant = 'primary', className = '' }: U
     <div className="relative">
       <button
         onClick={() => setShowOptions(!showOptions)}
-        disabled={isLoading}
         className={`${baseStyles} ${variantStyles} ${className}`}
       >
-        {isLoading ? 'Processing...' : 'Get More Reports'}
+        Get More Reports
       </button>
 
       {showOptions && (
