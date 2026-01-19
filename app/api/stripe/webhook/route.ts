@@ -46,39 +46,58 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-        const userId = session.metadata?.supabase_user_id;
-        const planType = session.metadata?.plan_type;
+        const customerEmail = session.customer_details?.email || session.customer_email;
+        const customerId = session.customer as string;
 
-        if (!userId) {
-          console.error('No user ID in checkout session metadata');
+        // Try to find user by metadata first, then by email
+        let userId = session.metadata?.supabase_user_id;
+        let profile;
+
+        if (userId) {
+          const { data } = await supabaseAdmin
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .single();
+          profile = data;
+        }
+
+        // If no userId in metadata, find by email (for Payment Links)
+        if (!profile && customerEmail) {
+          const { data } = await supabaseAdmin
+            .from('profiles')
+            .select('*')
+            .eq('email', customerEmail)
+            .single();
+          profile = data;
+          userId = profile?.id;
+        }
+
+        if (!profile || !userId) {
+          console.error('No user found for checkout session', { customerEmail, customerId });
           break;
         }
 
-        if (session.mode === 'subscription' && session.subscription) {
+        if (session.mode === 'subscription') {
           // Monthly subscription - 5 reports/month
           await supabaseAdmin.from('profiles').update({
             plan: 'pro',
-            stripe_customer_id: session.customer as string,
+            stripe_customer_id: customerId,
             billing_cycle_start: new Date().toISOString(),
+            generations_this_month: 0,
           }).eq('id', userId);
 
-          console.log(`User ${userId} upgraded to Pro plan (subscription)`);
-        } else if (session.mode === 'payment' && planType === 'one_report') {
+          console.log(`User ${userId} (${customerEmail}) upgraded to Pro plan (subscription)`);
+        } else if (session.mode === 'payment') {
           // One-time purchase - add 1 report credit
-          const { data: profile } = await supabaseAdmin
-            .from('profiles')
-            .select('report_credits')
-            .eq('id', userId)
-            .single();
-
-          const currentCredits = profile?.report_credits || 0;
+          const currentCredits = profile.report_credits || 0;
 
           await supabaseAdmin.from('profiles').update({
             report_credits: currentCredits + 1,
-            stripe_customer_id: session.customer as string,
+            stripe_customer_id: customerId,
           }).eq('id', userId);
 
-          console.log(`User ${userId} purchased 1 report credit (now has ${currentCredits + 1})`);
+          console.log(`User ${userId} (${customerEmail}) purchased 1 report credit (now has ${currentCredits + 1})`);
         }
         break;
       }
